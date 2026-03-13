@@ -538,7 +538,7 @@ header {
 .cat-tab:hover { opacity: 0.7; }
 .cat-tab.active { color: white !important; }
 .cat-tab[data-cat="all"] { color: var(--ink); }
-.cat-tab[data-cat="all"].active { background: var(--ink); border-color: var(--ink); }
+.cat-tab[data-cat="all"].active { background: var(--primary); border-color: var(--primary); color: white !important; }
 .cat-tab[data-cat="perso"] { color: var(--primary); }
 .cat-tab[data-cat="perso"].active { background: var(--primary); }
 .cat-tab[data-cat="travail"] { color: var(--sky); }
@@ -1724,12 +1724,34 @@ header {
   .history-stats { gap: 8px; }
   .hist-stat { padding: 11px 12px; min-width: 70px; }
   .hist-stat .val { font-size: 1.5rem; }
-  .add-form { padding: 14px 16px; gap: 8px; }
-  .form-options { gap: 6px; }
-  .form-date, .form-select { font-size: 0.72rem; padding: 5px 8px; }
-  .add-btn { padding: 7px 14px; font-size: 0.82rem; }
-  .nav-tab { padding: 10px 14px; font-size: 0.82rem; }
-  .main-nav { margin-bottom: 20px; }
+
+  /* Formulaire mobile : layout en colonne */
+  .add-form {
+    padding: 14px 16px; gap: 10px;
+    flex-direction: column; align-items: stretch;
+  }
+  .add-form input[type="text"] {
+    width: 100%; min-width: 0;
+    font-size: 0.95rem; padding: 4px 0;
+    border-bottom: 1.5px solid var(--border);
+  }
+  .form-options {
+    display: grid;
+    grid-template-columns: auto auto 1fr;
+    gap: 7px; align-items: center;
+  }
+  .form-date {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+  .add-btn {
+    width: 100%; padding: 10px;
+    font-size: 0.9rem; text-align: center;
+  }
+  .form-date, .form-select { font-size: 0.78rem; padding: 6px 9px; }
+
+  .nav-tab { padding: 10px 12px; font-size: 0.8rem; }
+  .main-nav { margin-bottom: 20px; overflow-x: auto; }
   .categories { gap: 6px; margin-bottom: 18px; }
   .cat-tab { padding: 6px 12px; font-size: 0.75rem; }
   .header-right { flex-direction: row; align-items: center; }
@@ -1739,6 +1761,7 @@ header {
   #notif-container { top: auto; bottom: 80px; right: 12px; left: 12px; }
   .notif-toast { min-width: unset; }
   .dash-grid { grid-template-columns: 1fr; }
+  .dash-kpi-row { grid-template-columns: repeat(2, 1fr); }
 }
 </style>
 </head>
