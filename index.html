@@ -495,6 +495,44 @@ header {
 .cat-tab[data-cat="projets"].active { background: var(--lavender); }
 
 
+/* ===== FILTER BAR ===== */
+.filter-bar {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 20px; flex-wrap: wrap;
+}
+.filter-label {
+  font-size: 0.72rem; font-weight: 600;
+  color: var(--muted); text-transform: uppercase;
+  letter-spacing: 0.08em; white-space: nowrap;
+}
+.filter-chip {
+  padding: 5px 13px; border-radius: 100px;
+  border: 1.5px solid var(--border);
+  background: transparent;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.76rem; font-weight: 500;
+  color: var(--muted); cursor: pointer;
+  transition: all 0.2s; white-space: nowrap;
+}
+.filter-chip:hover { border-color: var(--primary); color: var(--primary); }
+.filter-chip.active {
+  background: var(--ink); border-color: var(--ink);
+  color: var(--warm-white);
+}
+.filter-chip.active.prio-high-chip { background: var(--prio-high); border-color: var(--prio-high); color: white; }
+.filter-chip.active.prio-medium-chip { background: var(--prio-medium); border-color: var(--prio-medium); color: white; }
+.filter-chip.active.prio-low-chip { background: var(--prio-low); border-color: var(--prio-low); color: white; }
+.filter-chip.active.date-chip { background: var(--primary); border-color: var(--primary); color: white; }
+.filter-sep { width: 1px; height: 18px; background: var(--border); flex-shrink: 0; }
+.filter-reset {
+  background: none; border: none; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; font-size: 0.72rem;
+  color: var(--muted); padding: 4px 8px; border-radius: 8px;
+  transition: all 0.2s; display: none;
+}
+.filter-reset.visible { display: block; }
+.filter-reset:hover { color: var(--danger); }
+
 /* Add Form */
 .add-form {
   background: var(--warm-white);
@@ -1467,6 +1505,19 @@ header {
       <button class="cat-add-btn" onclick="promptNewCategory()" title="Ajouter une catégorie">＋</button>
     </div>
 
+    <!-- BARRE DE FILTRES -->
+    <div class="filter-bar" id="filter-bar">
+      <span class="filter-label">Filtrer</span>
+      <button class="filter-chip prio-high-chip" data-filter="prio-high" onclick="toggleFilter('prio-high')">🔴 Haute</button>
+      <button class="filter-chip prio-medium-chip" data-filter="prio-medium" onclick="toggleFilter('prio-medium')">🟡 Normale</button>
+      <button class="filter-chip prio-low-chip" data-filter="prio-low" onclick="toggleFilter('prio-low')">🔵 Faible</button>
+      <div class="filter-sep"></div>
+      <button class="filter-chip date-chip" data-filter="today" onclick="toggleFilter('today')">Aujourd'hui</button>
+      <button class="filter-chip date-chip" data-filter="week" onclick="toggleFilter('week')">Cette semaine</button>
+      <button class="filter-chip date-chip" data-filter="overdue" onclick="toggleFilter('overdue')">En retard</button>
+      <button class="filter-reset" id="filter-reset" onclick="resetFilters()">✕ Réinitialiser</button>
+    </div>
+
     <div class="add-form">
       <input type="text" id="task-input" placeholder="Ajouter une tâche…" maxlength="120">
       <div class="form-options">
@@ -1724,6 +1775,7 @@ let customCats = []; // {id, name, color}
 let currentCat = 'all';
 let selectedColor = '#2563EB';
 let showDone = false;
+let activeFilters = new Set();
 let currentUser = null;
 let unsub = null;
 let dragSrcId = null;
@@ -1975,10 +2027,54 @@ function initDrag(el, taskId) {
 }
 
 // ---- RENDER ----
+// ===== FILTRES =====
+function isThisWeek(dateStr) {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const due = new Date(dateStr + 'T00:00:00');
+  const diff = Math.round((due - today) / 86400000);
+  return diff >= 0 && diff <= 7;
+}
+
+window.toggleFilter = function(filter) {
+  if (activeFilters.has(filter)) activeFilters.delete(filter);
+  else activeFilters.add(filter);
+  // Mettre à jour l'apparence des chips
+  document.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.classList.toggle('active', activeFilters.has(chip.dataset.filter));
+  });
+  // Afficher/masquer le bouton reset
+  document.getElementById('filter-reset').classList.toggle('visible', activeFilters.size > 0);
+  render();
+};
+
+window.resetFilters = function() {
+  activeFilters.clear();
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  document.getElementById('filter-reset').classList.remove('visible');
+  render();
+};
+
 function render() {
-  const filtered = currentCat === 'all' ? tasks : tasks.filter(t => t.cat === currentCat);
-  const active   = filtered.filter(t => !t.done);
-  const done     = filtered.filter(t => t.done);
+  let filtered = currentCat === 'all' ? tasks : tasks.filter(t => t.cat === currentCat);
+
+  // Appliquer les filtres actifs
+  if (activeFilters.size > 0) {
+    filtered = filtered.filter(t => {
+      const info = t.dueDate ? dueDateInfo(t.dueDate) : null;
+      for (const f of activeFilters) {
+        if (f === 'prio-high'   && t.prio === 'high')                 return true;
+        if (f === 'prio-medium' && t.prio === 'medium')               return true;
+        if (f === 'prio-low'    && (t.prio === 'low' || !t.prio))     return true;
+        if (f === 'today'       && info?.cls === 'today')              return true;
+        if (f === 'week'        && t.dueDate && isThisWeek(t.dueDate)) return true;
+        if (f === 'overdue'     && info?.cls === 'overdue')            return true;
+      }
+      return false;
+    });
+  }
+
+  const active = filtered.filter(t => !t.done);
+  const done   = filtered.filter(t => t.done);
 
   document.getElementById('active-count').textContent = active.length;
 
