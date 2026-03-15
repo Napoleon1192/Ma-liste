@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ma Liste</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 130 130'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%231A4FBF'/%3E%3Cstop offset='100%25' stop-color='%232563EB'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='130' height='130' rx='28' fill='url(%23g)'/%3E%3Crect x='24' y='85' width='20' height='30' rx='4' fill='white' opacity='0.4'/%3E%3Crect x='51' y='63' width='20' height='52' rx='4' fill='white' opacity='0.65'/%3E%3Crect x='78' y='40' width='20' height='75' rx='4' fill='white' opacity='0.85'/%3E%3Cline x1='16' y1='118' x2='108' y2='118' stroke='white' stroke-width='2' stroke-linecap='round' opacity='0.4'/%3E%3Ccircle cx='104' cy='26' r='18' fill='white'/%3E%3Cpath d='M96 26 L101 32 L112 20' stroke='%232563EB' stroke-width='3' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E">
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%231A4FBF'/%3E%3Cstop offset='100%25' stop-color='%232563EB'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='180' height='180' rx='38' fill='url(%23g)'/%3E%3Crect x='32' y='118' width='28' height='42' rx='6' fill='white' opacity='0.4'/%3E%3Crect x='70' y='88' width='28' height='72' rx='6' fill='white' opacity='0.65'/%3E%3Crect x='108' y='56' width='28' height='104' rx='6' fill='white' opacity='0.85'/%3E%3Cline x1='22' y1='163' x2='148' y2='163' stroke='white' stroke-width='3' stroke-linecap='round' opacity='0.4'/%3E%3Ccircle cx='144' cy='36' r='25' fill='white'/%3E%3Cpath d='M133 36 L140 44 L155 28' stroke='%232563EB' stroke-width='4.5' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#2563EB">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -1131,7 +1131,7 @@ header {
 .streak-day.today { border-color: var(--primary); color: var(--primary); font-weight: 800; }
 
 /* Dashboard nav tab */
-.nav-tab[data-page="dashboard"]::after { content: ' 📊'; }
+/* Dashboard nav tab */
 
 /* ===== NOTES ===== */
 .notes-toolbar { margin-bottom: 16px; }
@@ -1439,8 +1439,8 @@ header {
 
   <nav class="main-nav">
     <button class="nav-tab active" data-page="todo">Tâches</button>
-    <button class="nav-tab" data-page="courses">🛒 Courses</button>
-    <button class="nav-tab" data-page="notes">📝 Notes</button>
+    <button class="nav-tab" data-page="courses">Courses</button>
+    <button class="nav-tab" data-page="notes">Notes</button>
     <button class="nav-tab" data-page="history">
       Historique <span class="tab-badge" id="hist-badge" style="display:none">0</span>
     </button>
@@ -1472,7 +1472,7 @@ header {
       <div class="form-options">
         <!-- Couleur -->
         <div class="color-picker-wrap">
-          <div class="color-preview" id="color-preview" onclick="togglePalette()" style="background:#7A9E7E"></div>
+          <div class="color-preview" id="color-preview" onclick="togglePalette()" style="background:#2563EB"></div>
           <div class="color-palette" id="color-palette">
             <div class="palette-section">
               <div class="palette-label">Tons chauds</div>
@@ -1491,7 +1491,7 @@ header {
               <div class="palette-label">Tons froids</div>
               <div class="palette-grid">
                 <div class="pal-swatch" style="background:#5B8FA8" data-color="#5B8FA8"></div>
-                <div class="pal-swatch" style="background:#3A7BD5" data-color="#3A7BD5"></div>
+                <div class="pal-swatch sel" style="background:#3A7BD5" data-color="#3A7BD5"></div>
                 <div class="pal-swatch" style="background:#8B7BAB" data-color="#8B7BAB"></div>
                 <div class="pal-swatch" style="background:#5BA8A0" data-color="#5BA8A0"></div>
                 <div class="pal-swatch" style="background:#6A9ECA" data-color="#6A9ECA"></div>
@@ -1503,7 +1503,7 @@ header {
             <div class="palette-section">
               <div class="palette-label">Naturels</div>
               <div class="palette-grid">
-                <div class="pal-swatch sel" style="background:#7A9E7E" data-color="#7A9E7E"></div>
+                <div class="pal-swatch" style="background:#7A9E7E" data-color="#7A9E7E"></div>
                 <div class="pal-swatch" style="background:#5D8A60" data-color="#5D8A60"></div>
                 <div class="pal-swatch" style="background:#A0B87A" data-color="#A0B87A"></div>
                 <div class="pal-swatch" style="background:#8CAE70" data-color="#8CAE70"></div>
@@ -1515,7 +1515,7 @@ header {
             </div>
             <div class="custom-color-row">
               <label>Couleur libre</label>
-              <input type="color" id="custom-color" value="#7A9E7E" oninput="setCustomColor(this.value)">
+              <input type="color" id="custom-color" value="#2563EB" oninput="setCustomColor(this.value)">
             </div>
           </div>
         </div>
@@ -1527,9 +1527,9 @@ header {
         </select>
         <!-- Priorité -->
         <select class="form-select" id="prio-select">
+          <option value="low">🔵 Basse</option>
           <option value="medium">🟡 Normale</option>
           <option value="high">🔴 Haute</option>
-          <option value="low">🔵 Basse</option>
         </select>
         <!-- Date d'échéance -->
         <input type="date" class="form-date" id="due-date-input" title="Date d'échéance">
@@ -1722,7 +1722,7 @@ let notes = [];
 let courseItems = [];
 let customCats = []; // {id, name, color}
 let currentCat = 'all';
-let selectedColor = '#7A9E7E';
+let selectedColor = '#2563EB';
 let showDone = false;
 let currentUser = null;
 let unsub = null;
@@ -2159,21 +2159,32 @@ window.addComment = function(taskId) {
   const t = tasks.find(t => t.id === taskId);
   if (!t) return;
   if (!t.comments) t.comments = [];
-  t.comments.push({
+  const comment = {
     id: 'c' + Date.now(),
     text,
     time: new Date().toLocaleString('fr-FR', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' })
-  });
+  };
+  t.comments.push(comment);
   input.value = '';
   saveToCloud({ tasks, history });
-  render();
-  // Reopen panel after re-render
-  setTimeout(() => {
-    const panel = document.getElementById('panel-' + taskId);
-    const btn = panel?.previousElementSibling?.querySelector('.expand-btn');
-    if (panel && !panel.classList.contains('open')) { panel.classList.add('open'); if (btn) btn.classList.add('open'); }
-    document.getElementById('comment-input-' + taskId)?.focus();
-  }, 50);
+  // DOM update only — no full render
+  const list = document.getElementById('comments-' + taskId);
+  if (list) {
+    const div = document.createElement('div');
+    div.className = 'comment-item';
+    div.dataset.cid = comment.id;
+    div.innerHTML = `
+      <div class="comment-avatar">${(currentUser?.email||'?').charAt(0).toUpperCase()}</div>
+      <div class="comment-body">
+        <div class="comment-text">${escHtml(comment.text)}</div>
+        <div class="comment-time">${comment.time}</div>
+      </div>
+      <button class="comment-del" onclick="deleteComment(${taskId}, '${comment.id}')">
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1.5 1.5L9.5 9.5M9.5 1.5L1.5 9.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>`;
+    list.appendChild(div);
+  }
+  input.focus();
 };
 
 window.deleteComment = function(taskId, commentId) {
@@ -2181,12 +2192,8 @@ window.deleteComment = function(taskId, commentId) {
   if (!t) return;
   t.comments = (t.comments || []).filter(c => c.id !== commentId);
   saveToCloud({ tasks, history });
-  render();
-  setTimeout(() => {
-    const panel = document.getElementById('panel-' + taskId);
-    const btn = panel?.previousElementSibling?.querySelector('.expand-btn');
-    if (panel) { panel.classList.add('open'); if (btn) btn.classList.add('open'); }
-  }, 50);
+  // DOM update only
+  document.querySelector(`#comments-${taskId} [data-cid="${commentId}"]`)?.remove();
 };
 
 window.handleFileUpload = async function(taskId, input) {
@@ -2195,22 +2202,32 @@ window.handleFileUpload = async function(taskId, input) {
   const isImage = file.type.startsWith('image/');
   const addBtn = document.querySelector(`#panel-${taskId} .attach-btn`);
 
-  // Fichiers non-image → base64 dans Firestore (max 900Ko)
   if (!isImage) {
     if (file.size > 900*1024) { alert('Fichier trop volumineux (max 900 Ko).'); input.value=''; return; }
     const reader = new FileReader();
     reader.onload = e => {
       const t = tasks.find(t => t.id === taskId); if (!t) return;
       if (!t.attachments) t.attachments = [];
-      t.attachments.push({ id:'a'+Date.now(), name:file.name, type:'file', data:e.target.result, size: file.size>1024 ? Math.round(file.size/1024)+' Ko' : file.size+' o' });
-      saveToCloud({ tasks, history }); render();
-      setTimeout(() => reopenPanel(taskId), 50);
+      const attach = { id:'a'+Date.now(), name:file.name, type:'file', data:e.target.result, size: file.size>1024 ? Math.round(file.size/1024)+' Ko' : file.size+' o' };
+      t.attachments.push(attach);
+      saveToCloud({ tasks, history });
+      // DOM update only
+      const fileDiv = document.createElement('div');
+      fileDiv.className = 'attach-file';
+      fileDiv.dataset.aid = attach.id;
+      fileDiv.innerHTML = `
+        <span class="attach-file-icon">${fileIcon(attach.name)}</span>
+        <span class="attach-file-name">${escHtml(attach.name)}</span>
+        <span class="attach-file-size">${attach.size}</span>
+        <button class="attach-file-del" onclick="deleteAttachment(${taskId}, '${attach.id}')">
+          <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1.5 1.5L9.5 9.5M9.5 1.5L1.5 9.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </button>`;
+      addBtn?.parentNode?.insertBefore(fileDiv, addBtn);
     };
     reader.readAsDataURL(file);
     input.value = ''; return;
   }
 
-  // Images → Firebase Storage
   if (!currentUser) return;
   if (addBtn) { addBtn.innerHTML = '⏳ Envoi en cours…'; addBtn.disabled = true; }
   const attachId = 'a' + Date.now();
@@ -2220,13 +2237,20 @@ window.handleFileUpload = async function(taskId, input) {
     const url = await getDownloadURL(storageRef);
     const t = tasks.find(t => t.id === taskId); if (!t) return;
     if (!t.attachments) t.attachments = [];
-    t.attachments.push({
-      id: attachId, name: file.name, type: 'image', data: url,
-      storagePath: storageRef.fullPath,
-      size: file.size > 1048576 ? (file.size/1048576).toFixed(1)+' Mo' : Math.round(file.size/1024)+' Ko'
-    });
-    saveToCloud({ tasks, history }); render();
-    setTimeout(() => reopenPanel(taskId), 50);
+    const attach = { id: attachId, name: file.name, type: 'image', data: url, storagePath: storageRef.fullPath, size: file.size > 1048576 ? (file.size/1048576).toFixed(1)+' Mo' : Math.round(file.size/1024)+' Ko' };
+    t.attachments.push(attach);
+    saveToCloud({ tasks, history });
+    // DOM update only
+    const grid = document.getElementById('photos-' + taskId);
+    if (grid) {
+      const thumb = document.createElement('div');
+      thumb.className = 'attach-thumb';
+      thumb.dataset.aid = attachId;
+      thumb.innerHTML = `
+        <img src="${url}" alt="${escHtml(file.name)}" onclick="openLightbox('${url}')">
+        <button class="attach-del" onclick="deleteAttachment(${taskId}, '${attachId}')">✕</button>`;
+      grid.appendChild(thumb);
+    }
   } catch(e) {
     console.error(e);
     alert('Erreur lors de l\'envoi de l\'image. Vérifiez les règles Firebase Storage.');
@@ -2243,8 +2267,9 @@ window.deleteAttachment = async function(taskId, attachId) {
     try { await deleteObject(ref(storage, attach.storagePath)); } catch(e) { console.warn('Storage delete:', e); }
   }
   t.attachments = (t.attachments || []).filter(a => a.id !== attachId);
-  saveToCloud({ tasks, history }); render();
-  setTimeout(() => reopenPanel(taskId), 50);
+  saveToCloud({ tasks, history });
+  // DOM update only
+  document.querySelector(`#panel-${taskId} [data-aid="${attachId}"]`)?.remove();
 };
 
 function reopenPanel(taskId) {
@@ -2423,25 +2448,60 @@ window.addSubtask = function(taskId) {
   if (!text) return;
   const t = tasks.find(t => t.id === taskId); if (!t) return;
   if (!t.subtasks) t.subtasks = [];
-  t.subtasks.push({ id: 's'+Date.now(), text, done: false });
+  const sub = { id: 's'+Date.now(), text, done: false };
+  t.subtasks.push(sub);
   input.value = '';
-  saveToCloud({ tasks, history }); render();
-  setTimeout(() => reopenPanel(taskId), 50);
+  saveToCloud({ tasks, history });
+  // DOM update only
+  const list = document.getElementById('subtasks-' + taskId);
+  if (list) {
+    const div = document.createElement('div');
+    div.className = 'subtask-item';
+    div.dataset.sid = sub.id;
+    div.innerHTML = `
+      <button class="subtask-check" onclick="toggleSubtask(${taskId},'${sub.id}')">
+        <svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.2 6L8 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <span class="subtask-text">${escHtml(sub.text)}</span>
+      <button class="subtask-del" onclick="deleteSubtask(${taskId},'${sub.id}')">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1.5 1.5L8.5 8.5M8.5 1.5L1.5 8.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>`;
+    list.appendChild(div);
+    updateSubtaskProgress(taskId, t);
+  }
+  input.focus();
 };
 
 window.toggleSubtask = function(taskId, subId) {
   const t = tasks.find(t => t.id === taskId); if (!t) return;
   const s = (t.subtasks||[]).find(s => s.id === subId); if (!s) return;
   s.done = !s.done;
-  saveToCloud({ tasks, history }); render();
-  setTimeout(() => reopenPanel(taskId), 50);
+  saveToCloud({ tasks, history });
+  // DOM update only
+  const item = document.querySelector(`#subtasks-${taskId} [data-sid="${subId}"]`);
+  if (item) {
+    const check = item.querySelector('.subtask-check');
+    const textEl = item.querySelector('.subtask-text');
+    check?.classList.toggle('done', s.done);
+    textEl?.classList.toggle('done', s.done);
+  }
+  updateSubtaskProgress(taskId, t);
 };
 
 window.deleteSubtask = function(taskId, subId) {
   const t = tasks.find(t => t.id === taskId); if (!t) return;
   t.subtasks = (t.subtasks||[]).filter(s => s.id !== subId);
-  saveToCloud({ tasks, history }); render();
-  setTimeout(() => reopenPanel(taskId), 50);
+  saveToCloud({ tasks, history });
+  // DOM update only
+  document.querySelector(`#subtasks-${taskId} [data-sid="${subId}"]`)?.remove();
+  updateSubtaskProgress(taskId, t);
+};
+
+function updateSubtaskProgress(taskId, t) {
+  const subs = t.subtasks || [];
+  const pct = subs.length ? Math.round(subs.filter(s=>s.done).length/subs.length*100) : 0;
+  const fill = document.querySelector(`#panel-${taskId} .subtask-progress-fill`);
+  if (fill) fill.style.width = pct + '%';
 };
 
 // ===== NOTIFICATIONS / RAPPELS =====
