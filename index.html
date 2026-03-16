@@ -1372,6 +1372,97 @@ header {
   .notif-toast { min-width: unset; }
   .dash-grid { grid-template-columns: 1fr; }
 }
+/* ===== AGENDA ===== */
+.agenda-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px;
+}
+.agenda-month-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem; font-weight: 700;
+  color: var(--ink); text-transform: capitalize;
+  letter-spacing: -0.02em;
+}
+.agenda-nav-btn {
+  background: var(--warm-white); border: 1.5px solid var(--border);
+  border-radius: 10px; width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem; cursor: pointer; color: var(--ink);
+  transition: all 0.2s; line-height: 1;
+}
+.agenda-nav-btn:hover { border-color: var(--primary); color: var(--primary); }
+.agenda-weekdays {
+  display: grid; grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 6px;
+}
+.agenda-weekdays span {
+  text-align: center; font-size: 0.72rem; font-weight: 600;
+  color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em;
+  padding: 6px 0;
+}
+.agenda-grid {
+  display: grid; grid-template-columns: repeat(7, 1fr);
+  gap: 4px; margin-bottom: 24px;
+}
+.agenda-day {
+  min-height: 68px; border-radius: 12px;
+  border: 1.5px solid var(--border);
+  padding: 6px; cursor: pointer;
+  transition: all 0.2s; background: var(--warm-white);
+}
+.agenda-day:hover { border-color: var(--primary); transform: translateY(-1px); }
+.agenda-day.other-month { opacity: 0.35; }
+.agenda-day.today { border-color: var(--primary); background: rgba(37,99,235,0.05); }
+.agenda-day.selected { border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary); }
+.agenda-day-num {
+  font-size: 0.78rem; font-weight: 700; color: var(--ink); margin-bottom: 4px;
+}
+.agenda-day.today .agenda-day-num { color: var(--primary); }
+.agenda-day.other-month .agenda-day-num { color: var(--muted); }
+.agenda-task-dot {
+  width: 100%; padding: 2px 5px; border-radius: 4px; margin-bottom: 2px;
+  font-size: 0.6rem; font-weight: 600; color: white;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.4;
+}
+.agenda-more { font-size: 0.6rem; color: var(--muted); font-weight: 600; padding: 1px 4px; }
+.agenda-detail {
+  background: var(--warm-white); border: 2px solid var(--ink);
+  border-radius: 16px; padding: 18px 20px;
+  box-shadow: var(--card-shadow); display: none;
+}
+.agenda-detail.visible { display: block; animation: fadeIn 0.2s ease; }
+.agenda-detail-title {
+  font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700;
+  color: var(--ink); margin-bottom: 14px; text-transform: capitalize;
+}
+.agenda-detail-task {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: 10px; margin-bottom: 7px;
+  border-left: 4px solid var(--accent); background: var(--cream); transition: all 0.2s;
+}
+.agenda-detail-task:hover { transform: translateX(3px); }
+.agenda-detail-check {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 2px solid var(--accent); cursor: pointer; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: transparent; transition: all 0.2s;
+}
+.agenda-detail-check:hover { background: var(--accent); }
+.agenda-detail-check.done { background: var(--done-border); border-color: var(--done-border); }
+.agenda-detail-text { flex: 1; font-size: 0.88rem; color: var(--ink); }
+.agenda-detail-text.done { text-decoration: line-through; color: var(--muted); }
+.agenda-detail-cat {
+  font-size: 0.65rem; padding: 2px 8px; border-radius: 100px;
+  font-weight: 600; color: white; background: var(--accent);
+  text-transform: capitalize; flex-shrink: 0;
+}
+.agenda-empty { text-align: center; padding: 20px; font-size: 0.88rem; color: var(--muted); font-style: italic; }
+@media (max-width: 640px) {
+  .agenda-day { min-height: 48px; padding: 4px; }
+  .agenda-task-dot { display: none; }
+  .agenda-day-num { font-size: 0.72rem; }
+}
+
 </style>
 </head>
 <body>
@@ -1477,6 +1568,7 @@ header {
 
   <nav class="main-nav">
     <button class="nav-tab active" data-page="todo">Tâches</button>
+    <button class="nav-tab" data-page="agenda">Agenda</button>
     <button class="nav-tab" data-page="courses">Courses</button>
     <button class="nav-tab" data-page="notes">Notes</button>
     <button class="nav-tab" data-page="history">
@@ -1695,6 +1787,20 @@ header {
       <button class="courses-clear-all" onclick="clearAllCourses()">🗑 Vider la liste</button>
     </div>
     <div id="courses-list"></div>
+  </div>
+
+  <!-- PAGE AGENDA -->
+  <div class="page" id="page-agenda">
+    <div class="agenda-header">
+      <button class="agenda-nav-btn" onclick="agendaPrevMonth()">‹</button>
+      <div class="agenda-month-title" id="agenda-month-title"></div>
+      <button class="agenda-nav-btn" onclick="agendaNextMonth()">›</button>
+    </div>
+    <div class="agenda-weekdays">
+      <span>Lun</span><span>Mar</span><span>Mer</span><span>Jeu</span><span>Ven</span><span>Sam</span><span>Dim</span>
+    </div>
+    <div class="agenda-grid" id="agenda-grid"></div>
+    <div class="agenda-detail" id="agenda-detail"></div>
   </div>
 
 </div>
@@ -2451,6 +2557,7 @@ document.querySelectorAll('.nav-tab').forEach(btn => {
     if (btn.dataset.page === 'dashboard') renderDashboard();
     if (btn.dataset.page === 'notes') renderNotes();
     if (btn.dataset.page === 'courses') renderCourses();
+    if (btn.dataset.page === 'agenda') renderAgenda();
   });
 });
 
@@ -2789,6 +2896,138 @@ window.updateNote = function(id, field, value) {
 window.deleteNote = function(id) {
   notes = notes.filter(n => n.id !== id);
   saveToCloud({}); renderNotes();
+};
+
+// ===== AGENDA =====
+let agendaDate = new Date();
+let agendaSelected = null;
+
+function renderAgenda() {
+  const year  = agendaDate.getFullYear();
+  const month = agendaDate.getMonth();
+  // Titre du mois
+  document.getElementById('agenda-month-title').textContent =
+    new Date(year, month, 1).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+
+  const grid = document.getElementById('agenda-grid');
+  grid.innerHTML = '';
+
+  // Premier jour du mois (lundi = 0)
+  const firstDay = new Date(year, month, 1);
+  let startDow = firstDay.getDay(); // 0=dim
+  startDow = startDow === 0 ? 6 : startDow - 1; // convertir lundi=0
+
+  const daysInMonth   = new Date(year, month + 1, 0).getDate();
+  const daysInPrevMonth = new Date(year, month, 0).getDate();
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  // Index des tâches par date
+  const tasksByDate = {};
+  tasks.filter(t => t.dueDate).forEach(t => {
+    if (!tasksByDate[t.dueDate]) tasksByDate[t.dueDate] = [];
+    tasksByDate[t.dueDate].push(t);
+  });
+
+  const totalCells = Math.ceil((startDow + daysInMonth) / 7) * 7;
+
+  for (let i = 0; i < totalCells; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'agenda-day';
+    let cellDate, isOther = false;
+
+    if (i < startDow) {
+      cellDate = new Date(year, month - 1, daysInPrevMonth - startDow + i + 1);
+      isOther = true;
+    } else if (i >= startDow + daysInMonth) {
+      cellDate = new Date(year, month + 1, i - startDow - daysInMonth + 1);
+      isOther = true;
+    } else {
+      cellDate = new Date(year, month, i - startDow + 1);
+    }
+
+    const dateStr = cellDate.toISOString().slice(0, 10);
+    const isToday = cellDate.getTime() === today.getTime();
+    const isSelected = agendaSelected === dateStr;
+
+    if (isOther) cell.classList.add('other-month');
+    if (isToday)    cell.classList.add('today');
+    if (isSelected) cell.classList.add('selected');
+
+    const dayTasks = tasksByDate[dateStr] || [];
+    const numEl = document.createElement('div');
+    numEl.className = 'agenda-day-num';
+    numEl.textContent = cellDate.getDate();
+    cell.appendChild(numEl);
+
+    // Afficher max 2 tâches + "+ n autres"
+    dayTasks.slice(0, 2).forEach(t => {
+      const dot = document.createElement('div');
+      dot.className = 'agenda-task-dot';
+      const accent = t.color || allCatColors()[t.cat] || '#2563EB';
+      dot.style.background = accent + (t.done ? '80' : '');
+      dot.textContent = t.text;
+      cell.appendChild(dot);
+    });
+    if (dayTasks.length > 2) {
+      const more = document.createElement('div');
+      more.className = 'agenda-more';
+      more.textContent = `+ ${dayTasks.length - 2}`;
+      cell.appendChild(more);
+    }
+
+    cell.addEventListener('click', () => {
+      agendaSelected = dateStr;
+      renderAgenda();
+      showAgendaDetail(dateStr, dayTasks);
+    });
+
+    grid.appendChild(cell);
+  }
+
+  // Rafraîchir le détail si une date est sélectionnée
+  if (agendaSelected) {
+    const selectedTasks = tasksByDate[agendaSelected] || [];
+    showAgendaDetail(agendaSelected, selectedTasks);
+  }
+}
+
+function showAgendaDetail(dateStr, dayTasks) {
+  const detail = document.getElementById('agenda-detail');
+  const d = new Date(dateStr + 'T00:00:00');
+  const label = d.toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+
+  if (dayTasks.length === 0) {
+    detail.className = 'agenda-detail visible';
+    detail.innerHTML = `<div class="agenda-detail-title">${label}</div><div class="agenda-empty">Aucune tâche ce jour.</div>`;
+    return;
+  }
+
+  detail.className = 'agenda-detail visible';
+  detail.innerHTML = `<div class="agenda-detail-title">${label}</div>` +
+    dayTasks.map(t => {
+      const accent = t.color || allCatColors()[t.cat] || '#2563EB';
+      return `<div class="agenda-detail-task" style="--accent:${accent}">
+        <div class="agenda-detail-check ${t.done ? 'done' : ''}" onclick="toggleTask(${t.id}, event)">
+          <svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.2 6L8 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <span class="agenda-detail-text ${t.done ? 'done' : ''}">${escHtml(t.text)}</span>
+        <span class="agenda-detail-cat" style="background:${accent}">${t.cat}</span>
+      </div>`;
+    }).join('');
+}
+
+window.agendaPrevMonth = function() {
+  agendaDate.setMonth(agendaDate.getMonth() - 1);
+  agendaSelected = null;
+  document.getElementById('agenda-detail').className = 'agenda-detail';
+  renderAgenda();
+};
+
+window.agendaNextMonth = function() {
+  agendaDate.setMonth(agendaDate.getMonth() + 1);
+  agendaSelected = null;
+  document.getElementById('agenda-detail').className = 'agenda-detail';
+  renderAgenda();
 };
 
 function renderNotes() {
