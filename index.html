@@ -441,23 +441,50 @@ header {
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 @keyframes taskComplete {
-  0% { transform: scale(1); }
-  30% { transform: scale(1.04); }
-  60% { transform: scale(0.97); }
+  0%   { transform: scale(1); }
+  15%  { transform: scale(1.06); }
+  35%  { transform: scale(0.96); }
+  55%  { transform: scale(1.02); }
   100% { transform: scale(1); opacity: 0.45; }
 }
 @keyframes confettiFall {
-  0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
-  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  0%   { transform: translate(0,0) rotate(0deg) scale(1); opacity: 1; }
+  70%  { opacity: 1; }
+  100% { transform: translate(var(--tx, 0px), var(--ty, 200px)) rotate(900deg) scale(0.3); opacity: 0; }
 }
 @keyframes checkPop {
-  0% { transform: scale(0); }
-  60% { transform: scale(1.3); }
-  100% { transform: scale(1); }
+  0%   { transform: scale(0) rotate(-20deg); }
+  55%  { transform: scale(1.4) rotate(8deg); }
+  75%  { transform: scale(0.9) rotate(-3deg); }
+  100% { transform: scale(1) rotate(0deg); }
 }
 @keyframes subtaskSlide {
   from { opacity: 0; transform: translateX(-8px); }
-  to { opacity: 1; transform: translateX(0); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+/* Flash overlay qui remplit la carte */
+@keyframes cardFlash {
+  0%   { opacity: 0; transform: scale(0.6); border-radius: 50%; }
+  40%  { opacity: 0.92; transform: scale(1); border-radius: 16px; }
+  70%  { opacity: 0.75; }
+  100% { opacity: 0; transform: scale(1.05); border-radius: 16px; }
+}
+/* Grand ✓ au centre de la carte */
+@keyframes bigCheckIn {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.2) rotate(-30deg); }
+  50%  { opacity: 1; transform: translate(-50%, -50%) scale(1.25) rotate(5deg); }
+  75%  { transform: translate(-50%, -50%) scale(0.92) rotate(-2deg); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.1) rotate(0deg); }
+}
+/* Anneau qui explose depuis le centre */
+@keyframes ringExpand {
+  0%   { transform: translate(-50%, -50%) scale(0); opacity: 0.8; }
+  100% { transform: translate(-50%, -50%) scale(3.5); opacity: 0; }
+}
+/* Particules en étoile depuis la carte */
+@keyframes starBurst {
+  0%   { transform: translate(0,0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
 }
 @keyframes notifSlide {
   from { opacity: 0; transform: translateX(120%); }
@@ -753,6 +780,12 @@ header {
 
 .task-actions { display: flex; align-items: center; gap: 4px; }
 .task-date { font-size: 0.65rem; color: var(--muted); font-weight: 500; }
+.edit-btn {
+  background: none; border: none; cursor: pointer;
+  color: var(--muted); padding: 3px; transition: color 0.2s;
+  line-height: 0; border-radius: 4px;
+}
+.edit-btn:hover { color: var(--primary); }
 .delete-btn {
   background: none; border: none; cursor: pointer;
   color: var(--border); padding: 3px; transition: color 0.2s;
@@ -1036,19 +1069,42 @@ header {
 
 /* ===== CONFETTI ===== */
 .confetti-piece {
-  position: fixed; width: 10px; height: 10px;
-  pointer-events: none; z-index: 9999;
+  position: fixed; pointer-events: none; z-index: 9999;
   border-radius: 2px;
   animation: confettiFall linear forwards;
 }
 
 /* ===== TASK COMPLETING ANIMATION ===== */
 .task-card.completing {
-  animation: taskComplete 0.5s ease forwards;
+  animation: taskComplete 0.65s cubic-bezier(0.34,1.56,0.64,1) forwards;
   pointer-events: none;
+  z-index: 10;
+  overflow: visible;
 }
 .check-circle.popping svg {
-  animation: checkPop 0.35s cubic-bezier(0.175,0.885,0.32,1.275) forwards;
+  animation: checkPop 0.45s cubic-bezier(0.175,0.885,0.32,1.275) forwards;
+}
+.card-flash {
+  position: absolute; inset: 0;
+  background: var(--accent, #2563EB);
+  border-radius: 14px; pointer-events: none; z-index: 5;
+  animation: cardFlash 0.65s ease forwards;
+}
+.card-big-check {
+  position: absolute; top: 50%; left: 50%;
+  font-size: 3.4rem; line-height: 1;
+  pointer-events: none; z-index: 6;
+  animation: bigCheckIn 0.7s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  filter: drop-shadow(0 2px 12px rgba(0,0,0,0.25));
+}
+.card-ring {
+  position: absolute; top: 50%; left: 50%;
+  width: 70px; height: 70px;
+  margin-left: -35px; margin-top: -35px;
+  border-radius: 50%;
+  border: 3px solid var(--accent, #2563EB);
+  pointer-events: none; z-index: 4;
+  animation: ringExpand 0.6s ease-out forwards;
 }
 
 /* ===== NOTIFICATIONS TOAST ===== */
@@ -1829,6 +1885,52 @@ header {
   <img id="lightbox-img" src="" alt="">
 </div>
 
+<!-- Edit task modal -->
+<div id="edit-modal-overlay" onclick="if(event.target===this) closeEditModal()" style="display:none;position:fixed;inset:0;background:rgba(15,30,53,0.55);backdrop-filter:blur(4px);z-index:300;align-items:center;justify-content:center;padding:24px">
+  <div style="background:var(--warm-white);border:2px solid var(--ink);border-radius:20px;padding:32px 36px;width:100%;max-width:460px;box-shadow:8px 8px 0 var(--ink);animation:slideIn 0.25s ease">
+    <div style="font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;color:var(--ink);margin-bottom:20px">✏️ Modifier la tâche</div>
+
+    <!-- Texte -->
+    <div style="margin-bottom:14px">
+      <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--ink);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.04em">Tâche</label>
+      <input type="text" id="edit-text" maxlength="120" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:12px;font-family:'DM Sans',sans-serif;font-size:0.95rem;color:var(--ink);background:var(--bg-input);outline:none;transition:border-color 0.2s" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'">
+    </div>
+
+    <!-- Catégorie + Priorité -->
+    <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+      <div style="flex:1;min-width:120px">
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--ink);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.04em">Catégorie</label>
+        <select id="edit-cat" class="form-select" style="width:100%"></select>
+      </div>
+      <div style="flex:1;min-width:120px">
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--ink);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.04em">Priorité</label>
+        <select id="edit-prio" class="form-select" style="width:100%">
+          <option value="low">🔵 Faible</option>
+          <option value="medium">🟡 Normale</option>
+          <option value="high">🔴 Haute</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Date + Couleur -->
+    <div style="display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap;align-items:flex-end">
+      <div style="flex:1;min-width:140px">
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--ink);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.04em">Date d'échéance</label>
+        <input type="date" id="edit-due" class="form-date" style="width:100%">
+      </div>
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--ink);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.04em">Couleur</label>
+        <input type="color" id="edit-color" style="width:44px;height:38px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;padding:3px;background:none">
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button onclick="closeEditModal()" style="padding:10px 22px;border:2px solid var(--border);border-radius:10px;background:none;font-family:'DM Sans',sans-serif;font-size:0.88rem;font-weight:500;color:var(--muted);cursor:pointer">Annuler</button>
+      <button onclick="saveEditModal()" style="padding:10px 24px;border:none;border-radius:10px;background:var(--ink);color:var(--warm-white);font-family:'DM Sans',sans-serif;font-size:0.88rem;font-weight:600;cursor:pointer;transition:all 0.2s" onmouseover="this.style.background='var(--primary)'" onmouseout="this.style.background='var(--ink)'">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
 <!-- Confirm overlay -->
 <div class="confirm-overlay" id="confirm-overlay">
   <div class="confirm-box">
@@ -2102,6 +2204,66 @@ window.restoreFromHistory = function(id) {
 
 window.confirmClearHistory = function() { document.getElementById('confirm-overlay').classList.add('show'); };
 window.closeConfirm        = function() { document.getElementById('confirm-overlay').classList.remove('show'); };
+
+// ===== EDIT MODAL =====
+let editTaskId = null;
+
+window.openEditModal = function(id) {
+  const t = tasks.find(t => t.id === id);
+  if (!t) return;
+  editTaskId = id;
+
+  document.getElementById('edit-text').value  = t.text;
+  document.getElementById('edit-prio').value  = t.prio || 'low';
+  document.getElementById('edit-due').value   = t.dueDate || '';
+  document.getElementById('edit-color').value = t.color || '#2563EB';
+
+  // Remplir le select catégorie
+  const sel = document.getElementById('edit-cat');
+  const allCats = [
+    { value:'perso', label:'Perso' },
+    { value:'travail', label:'Travail' },
+    { value:'projets', label:'Projets' },
+    ...customCats.map(c => ({ value: c.id, label: c.name }))
+  ];
+  sel.innerHTML = allCats.map(o =>
+    `<option value="${o.value}"${o.value === t.cat ? ' selected' : ''}>${escHtml(o.label)}</option>`
+  ).join('');
+
+  const overlay = document.getElementById('edit-modal-overlay');
+  overlay.style.display = 'flex';
+  setTimeout(() => document.getElementById('edit-text').focus(), 100);
+};
+
+window.closeEditModal = function() {
+  document.getElementById('edit-modal-overlay').style.display = 'none';
+  editTaskId = null;
+};
+
+window.saveEditModal = function() {
+  if (!editTaskId) return;
+  const t = tasks.find(t => t.id === editTaskId);
+  if (!t) return;
+
+  const newText = document.getElementById('edit-text').value.trim();
+  if (!newText) { document.getElementById('edit-text').focus(); return; }
+
+  t.text    = newText;
+  t.cat     = document.getElementById('edit-cat').value;
+  t.prio    = document.getElementById('edit-prio').value;
+  t.dueDate = document.getElementById('edit-due').value || null;
+  t.color   = document.getElementById('edit-color').value;
+
+  saveToCloud({ tasks, history });
+  render();
+  closeEditModal();
+};
+
+// Touche Entrée pour valider
+document.getElementById('edit-text')?.addEventListener('keydown', e => {
+  if (e.key === 'Enter') window.saveEditModal();
+  if (e.key === 'Escape') window.closeEditModal();
+});
 window.clearHistory = function() {
   history = []; saveToCloud({ tasks, history }); renderHistory(); closeConfirm();
 };
@@ -2260,6 +2422,9 @@ function makeCard(t) {
       </div>
       <div class="task-actions">
         <span class="task-date">${t.date}</span>
+        <button class="edit-btn" onclick="openEditModal(${t.id})" title="Modifier">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M9 2L11 4L5 10H3V8L9 2Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
         <button class="expand-btn" onclick="togglePanel(this, ${t.id})" title="Commentaires & pièces jointes">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 4.5L7 9.5L12 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
@@ -2609,45 +2774,87 @@ document.getElementById('cat-select').addEventListener('change', function() {
 document.getElementById('confirm-overlay').addEventListener('click', e => { if (e.target === e.currentTarget) window.closeConfirm(); });
 
 // ===== CONFETTI =====
-function launchConfetti(x, y) {
-  const colors = ['#2563EB','#7A9E7E','#E8820C','#6B7FBF','#EF4444','#F59E0B','#4ADE80','#F472B6'];
-  for (let i = 0; i < 28; i++) {
+// ===== CONFETTI & ANIMATION =====
+function launchConfetti(rect) {
+  const colors = ['#2563EB','#7A9E7E','#E8302A','#8B7BAB','#F59E0B','#4ADE80','#F472B6','#FBBF24','#60A5FA'];
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top  + rect.height / 2;
+
+  // Confetti qui jaillit depuis la carte dans toutes les directions
+  for (let i = 0; i < 48; i++) {
     const el = document.createElement('div');
     el.className = 'confetti-piece';
+    const angle  = (Math.random() * 360) * (Math.PI / 180);
+    const speed  = 120 + Math.random() * 260;
+    const size   = 7 + Math.random() * 10;
+    const dur    = 0.8 + Math.random() * 0.9;
+    const delay  = Math.random() * 0.15;
     el.style.cssText = `
-      left: ${x + (Math.random()-0.5)*80}px;
-      top: ${y}px;
-      background: ${colors[Math.floor(Math.random()*colors.length)]};
-      width: ${6+Math.random()*8}px;
-      height: ${6+Math.random()*8}px;
-      border-radius: ${Math.random()>0.5 ? '50%' : '2px'};
-      animation-duration: ${0.9+Math.random()*0.8}s;
-      animation-delay: ${Math.random()*0.2}s;
+      left:${cx + (Math.random()-0.5)*rect.width*0.6}px;
+      top:${cy + (Math.random()-0.5)*rect.height*0.4}px;
+      width:${size}px; height:${size * (Math.random() > 0.5 ? 1 : 2.5)}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      border-radius:${Math.random()>0.4?'50%':'3px'};
+      animation-duration:${dur}s;
+      animation-delay:${delay}s;
+      --tx:${Math.cos(angle)*speed}px;
+      --ty:${Math.sin(angle)*speed - 60}px;
     `;
     document.body.appendChild(el);
-    setTimeout(() => el.remove(), 2000);
+    setTimeout(() => el.remove(), (dur + delay) * 1000 + 200);
   }
 }
 
-// Enhanced toggleTask with confetti
 window.toggleTask = function(id, event) {
   const t = tasks.find(t => t.id === id);
   if (!t) return;
-  const card = event ? event.target.closest('.task-card') : document.querySelector(`[data-task-id="${id}"]`);
+  const card = event ? event.target.closest('.task-card') : null;
+
   if (!t.done) {
-    // Completing — animate then save
     if (card) {
+      const accent = t.color || allCatColors()[t.cat] || '#2563EB';
+      card.style.setProperty('--accent', accent);
+
+      // Flash coloré qui remplit la carte
+      const flash = document.createElement('div');
+      flash.className = 'card-flash';
+      flash.style.background = accent;
+      card.appendChild(flash);
+
+      // Grand ✓ au centre
+      const bigCheck = document.createElement('div');
+      bigCheck.className = 'card-big-check';
+      bigCheck.textContent = '✓';
+      bigCheck.style.color = 'white';
+      card.appendChild(bigCheck);
+
+      // Anneau d'onde
+      const ring = document.createElement('div');
+      ring.className = 'card-ring';
+      ring.style.borderColor = accent;
+      card.appendChild(ring);
+
+      // Animation de la carte
       card.classList.add('completing');
       const circle = card.querySelector('.check-circle');
-      if (circle) { circle.classList.add('popping'); }
+      if (circle) circle.classList.add('popping');
+
+      // Confetti depuis la carte
       const rect = card.getBoundingClientRect();
-      launchConfetti(rect.left + rect.width/2, rect.top + rect.height/2);
-    }
-    setTimeout(() => {
+      launchConfetti(rect);
+
+      // Nettoyage et sauvegarde
+      setTimeout(() => {
+        flash.remove(); bigCheck.remove(); ring.remove();
+        t.done = true;
+        archiveTask(t);
+        saveToCloud({ tasks, history }); render(); renderHistory();
+      }, 700);
+    } else {
       t.done = true;
       archiveTask(t);
       saveToCloud({ tasks, history }); render(); renderHistory();
-    }, 400);
+    }
   } else {
     t.done = false;
     saveToCloud({ tasks, history }); render(); renderHistory();
@@ -2905,66 +3112,63 @@ let agendaSelected = null;
 function renderAgenda() {
   const year  = agendaDate.getFullYear();
   const month = agendaDate.getMonth();
-  // Titre du mois
+
   document.getElementById('agenda-month-title').textContent =
     new Date(year, month, 1).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
 
   const grid = document.getElementById('agenda-grid');
   grid.innerHTML = '';
 
-  // Premier jour du mois (lundi = 0)
-  const firstDay = new Date(year, month, 1);
-  let startDow = firstDay.getDay(); // 0=dim
-  startDow = startDow === 0 ? 6 : startDow - 1; // convertir lundi=0
+  // Premier jour du mois — lundi=0 ... dimanche=6
+  const firstDow = new Date(year, month, 1).getDay();
+  const startOffset = firstDow === 0 ? 6 : firstDow - 1;
 
-  const daysInMonth   = new Date(year, month + 1, 0).getDate();
+  const daysInMonth    = new Date(year, month + 1, 0).getDate();
   const daysInPrevMonth = new Date(year, month, 0).getDate();
-  const today = new Date(); today.setHours(0,0,0,0);
+  const totalCells     = Math.ceil((startOffset + daysInMonth) / 7) * 7;
 
-  // Index des tâches par date
+  // Date d'aujourd'hui en chaîne locale YYYY-MM-DD sans décalage fuseau
+  const todayLocal = localDateStr(new Date());
+
+  // Index des tâches par date locale
   const tasksByDate = {};
   tasks.filter(t => t.dueDate).forEach(t => {
     if (!tasksByDate[t.dueDate]) tasksByDate[t.dueDate] = [];
     tasksByDate[t.dueDate].push(t);
   });
 
-  const totalCells = Math.ceil((startDow + daysInMonth) / 7) * 7;
-
   for (let i = 0; i < totalCells; i++) {
-    const cell = document.createElement('div');
-    cell.className = 'agenda-day';
-    let cellDate, isOther = false;
-
-    if (i < startDow) {
-      cellDate = new Date(year, month - 1, daysInPrevMonth - startDow + i + 1);
+    let d, isOther = false;
+    if (i < startOffset) {
+      d = new Date(year, month - 1, daysInPrevMonth - startOffset + i + 1);
       isOther = true;
-    } else if (i >= startDow + daysInMonth) {
-      cellDate = new Date(year, month + 1, i - startDow - daysInMonth + 1);
+    } else if (i >= startOffset + daysInMonth) {
+      d = new Date(year, month + 1, i - startOffset - daysInMonth + 1);
       isOther = true;
     } else {
-      cellDate = new Date(year, month, i - startDow + 1);
+      d = new Date(year, month, i - startOffset + 1);
     }
 
-    const dateStr = cellDate.toISOString().slice(0, 10);
-    const isToday = cellDate.getTime() === today.getTime();
+    const dateStr   = localDateStr(d);
+    const isToday   = dateStr === todayLocal;
     const isSelected = agendaSelected === dateStr;
+    const dayTasks  = tasksByDate[dateStr] || [];
 
-    if (isOther) cell.classList.add('other-month');
-    if (isToday)    cell.classList.add('today');
-    if (isSelected) cell.classList.add('selected');
+    const cell = document.createElement('div');
+    cell.className = 'agenda-day' +
+      (isOther    ? ' other-month' : '') +
+      (isToday    ? ' today'       : '') +
+      (isSelected ? ' selected'    : '');
 
-    const dayTasks = tasksByDate[dateStr] || [];
     const numEl = document.createElement('div');
     numEl.className = 'agenda-day-num';
-    numEl.textContent = cellDate.getDate();
+    numEl.textContent = d.getDate();
     cell.appendChild(numEl);
 
-    // Afficher max 2 tâches + "+ n autres"
     dayTasks.slice(0, 2).forEach(t => {
       const dot = document.createElement('div');
       dot.className = 'agenda-task-dot';
-      const accent = t.color || allCatColors()[t.cat] || '#2563EB';
-      dot.style.background = accent + (t.done ? '80' : '');
+      dot.style.background = (t.color || allCatColors()[t.cat] || '#2563EB') + (t.done ? '80' : '');
       dot.textContent = t.text;
       cell.appendChild(dot);
     });
@@ -2978,17 +3182,23 @@ function renderAgenda() {
     cell.addEventListener('click', () => {
       agendaSelected = dateStr;
       renderAgenda();
-      showAgendaDetail(dateStr, dayTasks);
+      showAgendaDetail(dateStr, tasksByDate[dateStr] || []);
     });
 
     grid.appendChild(cell);
   }
 
-  // Rafraîchir le détail si une date est sélectionnée
   if (agendaSelected) {
-    const selectedTasks = tasksByDate[agendaSelected] || [];
-    showAgendaDetail(agendaSelected, selectedTasks);
+    showAgendaDetail(agendaSelected, tasksByDate[agendaSelected] || []);
   }
+}
+
+// Retourne YYYY-MM-DD sans décalage fuseau horaire
+function localDateStr(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
 }
 
 function showAgendaDetail(dateStr, dayTasks) {
