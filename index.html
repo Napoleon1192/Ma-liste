@@ -2415,7 +2415,7 @@ function makeCard(t) {
     </div>
     <div class="task-footer">
       <div class="task-meta">
-        <span class="cat-badge">${t.cat}</span>
+        <span class="cat-badge">${getCatName(t.cat)}</span>
         <span class="prio-label ${prio}">${prioMap[prio]}</span>
         ${dueBadge}
         ${extrasBadge}
@@ -2702,7 +2702,7 @@ function renderHistory() {
       card.innerHTML = `
         <div class="hist-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.2 6L8 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <div class="hist-text">${escHtml(h.text)}</div>
-        <div class="hist-meta"><span class="hist-cat">${h.cat}</span>${time ? `<span class="hist-time">${time}</span>` : ''}</div>
+        <div class="hist-meta"><span class="hist-cat">${getCatName(h.cat)}</span>${time ? `<span class="hist-time">${time}</span>` : ''}</div>
         <button class="hist-restore" onclick="restoreFromHistory(${h.id})">↩ Restaurer</button>
         <button class="hist-del" onclick="deleteFromHistory(${h.id})"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1.5 1.5L10.5 10.5M10.5 1.5L1.5 10.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>`;
       groupEl.appendChild(card);
@@ -3222,7 +3222,7 @@ function showAgendaDetail(dateStr, dayTasks) {
           <svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.2 6L8 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
         <span class="agenda-detail-text ${t.done ? 'done' : ''}">${escHtml(t.text)}</span>
-        <span class="agenda-detail-cat" style="background:${accent}">${t.cat}</span>
+        <span class="agenda-detail-cat" style="background:${accent}">${getCatName(t.cat)}</span>
       </div>`;
     }).join('');
 }
@@ -3352,6 +3352,13 @@ function allCatColors() {
   const colors = { ...BASE_CATS };
   customCats.forEach(c => colors[c.id] = c.color);
   return colors;
+}
+
+function getCatName(catId) {
+  const BASE_NAMES = { perso:'Perso', travail:'Travail', projets:'Projets', courses:'Courses' };
+  if (BASE_NAMES[catId]) return BASE_NAMES[catId];
+  const custom = customCats.find(c => c.id === catId);
+  return custom ? custom.name : catId;
 }
 
 function renderCustomCats() {
