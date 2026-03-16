@@ -3203,7 +3203,8 @@ function localDateStr(d) {
 
 function showAgendaDetail(dateStr, dayTasks) {
   const detail = document.getElementById('agenda-detail');
-  const d = new Date(dateStr + 'T00:00:00');
+  const parts = dateStr.split('-');
+  const d = new Date(+parts[0], +parts[1] - 1, +parts[2]);
   const label = d.toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
 
   if (dayTasks.length === 0) {
@@ -3227,14 +3228,14 @@ function showAgendaDetail(dateStr, dayTasks) {
 }
 
 window.agendaPrevMonth = function() {
-  agendaDate.setMonth(agendaDate.getMonth() - 1);
+  agendaDate = new Date(agendaDate.getFullYear(), agendaDate.getMonth() - 1, 1);
   agendaSelected = null;
   document.getElementById('agenda-detail').className = 'agenda-detail';
   renderAgenda();
 };
 
 window.agendaNextMonth = function() {
-  agendaDate.setMonth(agendaDate.getMonth() + 1);
+  agendaDate = new Date(agendaDate.getFullYear(), agendaDate.getMonth() + 1, 1);
   agendaSelected = null;
   document.getElementById('agenda-detail').className = 'agenda-detail';
   renderAgenda();
