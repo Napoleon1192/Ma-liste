@@ -487,12 +487,12 @@ header {
 .cat-tab[data-cat="all"].active { background: var(--ink); border-color: var(--ink); }
 .cat-tab[data-cat="perso"] { color: var(--primary); }
 .cat-tab[data-cat="perso"].active { background: var(--primary); }
-.cat-tab[data-cat="travail"] { color: var(--sky); }
-.cat-tab[data-cat="travail"].active { background: var(--sky); }
+.cat-tab[data-cat="travail"] { color: #E8302A; }
+.cat-tab[data-cat="travail"].active { background: #E8302A; }
 .cat-tab[data-cat="courses"] { color: var(--sage); }
 .cat-tab[data-cat="courses"].active { background: var(--sage); }
-.cat-tab[data-cat="projets"] { color: var(--lavender); }
-.cat-tab[data-cat="projets"].active { background: var(--lavender); }
+.cat-tab[data-cat="projets"] { color: #8B7BAB; }
+.cat-tab[data-cat="projets"].active { background: #8B7BAB; }
 
 
 /* ===== FILTER BAR ===== */
@@ -1766,7 +1766,7 @@ const db   = getFirestore(app);
 const storage = getStorage(app);
 
 // ---- STATE ----
-const CAT_COLORS = { perso:'#2563EB', travail:'#3B82C4', courses:'#7A9E7E', projets:'#6B7FBF' };
+const CAT_COLORS = { perso:'#2563EB', travail:'#E8302A', courses:'#7A9E7E', projets:'#8B7BAB' };
 let tasks = [];
 let history = [];
 let notes = [];
@@ -1954,10 +1954,11 @@ window.addTask = function() {
   const input = document.getElementById('task-input');
   const text  = input.value.trim();
   if (!text) { input.focus(); return; }
+  const cat = document.getElementById('cat-select').value;
   tasks.unshift({
     id:      Date.now(),
     text,
-    cat:     document.getElementById('cat-select').value,
+    cat,
     color:   selectedColor,
     prio:    document.getElementById('prio-select').value,
     dueDate: document.getElementById('due-date-input').value || null,
@@ -1966,7 +1967,10 @@ window.addTask = function() {
   });
   input.value = '';
   document.getElementById('due-date-input').value = '';
-  document.getElementById('prio-select').value = 'medium';
+  document.getElementById('prio-select').value = 'low';
+  // Remettre la couleur par défaut de la catégorie
+  const defaultColor = allCatColors()[cat] || '#2563EB';
+  window.selectColor(defaultColor);
   saveToCloud({ tasks, history });
   render();
 };
@@ -2489,6 +2493,12 @@ window.toggleDone = function() {
 };
 
 document.getElementById('task-input').addEventListener('keydown', e => { if (e.key === 'Enter') window.addTask(); });
+
+// Couleur automatique selon la catégorie sélectionnée
+document.getElementById('cat-select').addEventListener('change', function() {
+  const color = allCatColors()[this.value] || '#2563EB';
+  window.selectColor(color);
+});
 document.getElementById('confirm-overlay').addEventListener('click', e => { if (e.target === e.currentTarget) window.closeConfirm(); });
 
 // ===== CONFETTI =====
@@ -2886,7 +2896,7 @@ document.getElementById('courses-item-input')?.addEventListener('keydown', e => 
 document.getElementById('courses-qty-input')?.addEventListener('keydown', e => { if (e.key === 'Enter') window.addCourseItem(); });
 
 // ===== CUSTOM CATEGORIES =====
-const BASE_CATS = { perso:'#2563EB', travail:'#3B82C4', projets:'#6B7FBF' };
+const BASE_CATS = { perso:'#2563EB', travail:'#E8302A', projets:'#8B7BAB' };
 
 function allCatColors() {
   const colors = { ...BASE_CATS };
